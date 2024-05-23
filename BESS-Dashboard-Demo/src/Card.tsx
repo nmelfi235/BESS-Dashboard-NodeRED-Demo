@@ -1,7 +1,7 @@
 interface cardProp {
   Name: string;
   Icon: string;
-  Data: string;
+  children: React.ReactNode;
 }
 
 function Card(props: cardProp) {
@@ -10,7 +10,7 @@ function Card(props: cardProp) {
       <div className="card-body">
         <h3 className="card-title">{props.Name}</h3>
         <img className="card-img-top" src={props.Icon} alt="icon" />
-        <p className="card-text">{props.Data}</p>
+        <p className="card-text">{props.children}</p>
       </div>
     </div>
   );
