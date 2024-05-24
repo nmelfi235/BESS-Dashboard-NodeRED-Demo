@@ -1,6 +1,7 @@
 import { bmsDataType, inverterDataType } from "./types";
 import Card from "./Card";
 import { useEffect, useState } from "react";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 function CardArea() {
   // Initialize data, empty as it has not attempted to fetch data yet
@@ -31,7 +32,7 @@ function CardArea() {
 
   return (
     <>
-      <div style={{ display: "flex" }}>
+      <div style={{ display: "flex" }} className="container-fluid card-area">
         <Card Name="Inverter Status" Icon="...">
           {inverterData.inverterStatus}
           <p>{inverterData.chargerStatus}</p>{" "}
