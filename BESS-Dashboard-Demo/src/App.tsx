@@ -1,41 +1,82 @@
 import "./App.css";
 import Card from "./Card";
+import { useEffect, useState } from "react";
 
 interface inverterDataType {
-  inverterStatus: string,
-  chargerStatus: string,
-  backupPower: number,
-  throughput: number,
-  temperature: number
+  inverterStatus: string;
+  chargerStatus: string;
+  backupPower: number;
+  throughput: number;
+  temperature: number;
 }
 
 interface bmsDataType {
-  soc: number,
-  temperature: number
+  soc: number;
+  temperature: number;
 }
 
-async function App() {
-  const inverterData = await getData<inverterDataType>('inverterStatus');
-  const batteryData = await getData<bmsDataType>('bmsStatus');
+function App() {
+  // Initialize data, empty as it has not attempted to fetch data yet
+  const [inverterData, setInverterData] = useState<inverterDataType>({
+    inverterStatus: "None",
+    chargerStatus: "None",
+    backupPower: 0,
+    throughput: 0,
+    temperature: 0,
+  });
+  const [batteryData, setBMSData] = useState<bmsDataType>({
+    soc: 0,
+    temperature: 0,
+  });
+
+  useEffect(() => {
+    const fetchData = async () =>
+      await fetch("http://192.168.0.2:1880/inverterStatus")
+        .then(async (response) => {
+          console.log(response);
+          return await response.json();
+        })
+        .then((result) => setInverterData(result));
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    const fetchData = async () =>
+      await fetch("http://192.168.0.2:1880/bmsStatus")
+        .then(async (response) => {
+          console.log(response);
+          return await response.json();
+        })
+        .then((result) => setBMSData(result));
+
+    fetchData();
+  }, []);
 
   return (
     <>
       <div style={{ display: "flex" }}>
-        <Card Name="Inverter Status" Icon="...">{inverterData.inverterStatus ? "<p>" + await inverterData.inverterStatus + "</p>" : "<p>No Data</p>"}{inverterData.chargerStatus ? "<p>" + await inverterData.chargerStatus + "</p>" : "<p>No Data</p>"} </Card>
-        <Card Name="Backup Power" Icon="...">{inverterData.backupPower ? inverterData.backupPower : "No Data"}</Card>
-        <Card Name="Battery Throughput" Icon="...">{inverterData.throughput ? inverterData.throughput : "No Data"} </Card>
-        <Card Name="SOC" Icon="...">{batteryData.soc ? batteryData.soc : "No Data"}</Card>
-        <Card Name="Battery Temperature" Icon="...">{batteryData.temperature ? batteryData.temperature : "No Data"}</Card>
-        <Card Name="Ambient Temperature" Icon="...">{String(inverterData.temperature)} </Card>
-        </div>
+        <Card Name="Inverter Status" Icon="...">
+          {inverterData.inverterStatus}
+          <p>{inverterData.chargerStatus}</p>{" "}
+        </Card>
+        <Card Name="Backup Power" Icon="...">
+          {inverterData.backupPower}
+        </Card>
+        <Card Name="Battery Throughput" Icon="...">
+          {inverterData.throughput}{" "}
+        </Card>
+        <Card Name="SOC" Icon="...">
+          {batteryData.soc}
+        </Card>
+        <Card Name="Battery Temperature" Icon="...">
+          {batteryData.temperature}
+        </Card>
+        <Card Name="Ambient Temperature" Icon="...">
+          {inverterData.temperature}{" "}
+        </Card>
+      </div>
     </>
   );
-}
-
-async function getData<i>(endpoint : string) : Promise<i> {
-  const data = await fetch('192.168.0.2/' + endpoint);
-  const data_1 = await data.json();
-  return await (data_1 as i);
 }
 
 export default App;
