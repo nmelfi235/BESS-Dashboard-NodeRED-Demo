@@ -1,4 +1,5 @@
 import "./App.css";
+import BatteryVoltageCurrentGraph from "./BatteryVoltageCurrentGraph";
 import CardArea from "./CardArea";
 
 function App() {
@@ -6,6 +7,7 @@ function App() {
     <>
       <h1>BESS Dashboard Clone</h1>
       <CardArea />
+      <BatteryVoltageCurrentGraph />
     </>
   );
 }
