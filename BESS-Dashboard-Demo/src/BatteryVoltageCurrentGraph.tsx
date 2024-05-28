@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import {
   CartesianGrid,
   Legend,
@@ -18,31 +19,87 @@ import {
 const width = "95%";
 const height = 300;
 const margin = { top: 5, right: 30, left: 20, bottom: 5 };
-const data = [
-  { name: 0, V: 51, A: 0 },
-  { name: 1, V: 51, A: 0 },
-  { name: 2, V: 52, A: 0 },
-  { name: 3, V: 51.5, A: 12 },
-  { name: 4, V: 51, A: -4 },
-  { name: 5, V: 51, A: 0 },
-];
 
 export default function BatteryVoltageCurrentGraph() {
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () =>
+      await fetch("http://192.168.0.2:1880/voltage_current")
+        .then(async (response) => {
+          return await response.json();
+        })
+        .then((result) => setData(result));
+
+    fetchData();
+  }, []);
+
   return (
     <>
       <h2>Battery Voltage/Current</h2>
       <ResponsiveContainer width={width} height={height}>
         <LineChart margin={margin} data={data} className="container-fluid">
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="Time" />
-          <YAxis yAxisId="left" />
-          <YAxis yAxisId="right" orientation="right" />
-          <Tooltip />
+          <CartesianGrid
+            strokeDasharray="3 3"
+            horizontalCoordinatesGenerator={(props) => [
+              (props.height * 5) / 5 - 55,
+              (props.height * 4) / 5 - 55,
+              (props.height * 3) / 5 - 55,
+              (props.height * 2) / 5 - 55,
+              (props.height * 1) / 5 - 55,
+            ]}
+          />
+          <XAxis
+            dataKey="timestamp"
+            tickFormatter={dateFormatter}
+            tickCount={24}
+          />
+          <YAxis yAxisId="left" label="V" domain={[50, 55]} />
+          <YAxis
+            yAxisId="right"
+            orientation="right"
+            label="A"
+            domain={[-1, 1]}
+          />
+          <Tooltip
+            labelFormatter={dateFormatter}
+            content={({ active, payload, label }) =>
+              active &&
+              payload &&
+              payload.length && (
+                <div className="graphToolTip">
+                  <p className="toolTipLabel">{`${dateFormatter(label)}}`}</p>
+                  <p className="toolTipValue">
+                    Voltage: {Number(payload[0].value).toFixed(2)} V
+                  </p>
+                  <p className="toolTipValue">
+                    Current: {Number(payload[1].value).toFixed(2)} A
+                  </p>
+                </div>
+              )
+            }
+          />
           <Legend />
-          <Line yAxisId="left" type="monotone" dataKey="V" stroke="#888488" />
-          <Line yAxisId="right" type="monotone" dataKey="A" stroke="#82cf9d" />
+          <Line
+            yAxisId="left"
+            type="monotone"
+            dataKey="voltage"
+            stroke="#888488"
+            dot={false}
+          />
+          <Line
+            yAxisId="right"
+            type="monotone"
+            dataKey="current"
+            stroke="#82cf9d"
+            dot={false}
+          />
         </LineChart>
       </ResponsiveContainer>
     </>
   );
+}
+
+function dateFormatter(d: number): string {
+  return new Date(d).toString();
 }
