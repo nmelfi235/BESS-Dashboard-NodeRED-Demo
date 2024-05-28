@@ -48,18 +48,25 @@ export default function BatteryVoltageCurrentGraph() {
               (props.height * 2) / 5 - 55,
               (props.height * 1) / 5 - 55,
             ]}
+            verticalCoordinatesGenerator={(props) => [
+              (props.width * 5) / 5,
+              (props.width * 4) / 5,
+              (props.width * 3) / 5,
+              (props.width * 2) / 5,
+              (props.width * 1) / 5,
+            ]}
           />
           <XAxis
             dataKey="timestamp"
             tickFormatter={dateFormatter}
             tickCount={24}
           />
-          <YAxis yAxisId="left" label="V" domain={[50, 55]} />
+          <YAxis yAxisId="left" label="V" domain={["auto", "auto"]} />
           <YAxis
             yAxisId="right"
             orientation="right"
             label="A"
-            domain={[-1, 1]}
+            domain={["auto", "auto"]}
           />
           <Tooltip
             labelFormatter={dateFormatter}
