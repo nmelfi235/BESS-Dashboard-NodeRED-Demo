@@ -59,7 +59,8 @@ export default function BatteryVoltageCurrentGraph() {
           <XAxis
             dataKey="timestamp"
             tickFormatter={dateFormatter}
-            tickCount={24}
+            interval={"equidistantPreserveStart"}
+            tickCount={4}
           />
           <YAxis yAxisId="left" label="V" domain={["auto", "auto"]} />
           <YAxis
@@ -108,5 +109,6 @@ export default function BatteryVoltageCurrentGraph() {
 }
 
 function dateFormatter(d: number): string {
-  return new Date(d).toString();
+  const newDate = new Date(d);
+  return `[${newDate.getMonth()}-${newDate.getDate()} ${newDate.getHours()}:${newDate.getMinutes()}]`;
 }
