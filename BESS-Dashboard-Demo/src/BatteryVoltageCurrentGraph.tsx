@@ -25,7 +25,7 @@ export default function BatteryVoltageCurrentGraph() {
 
   useEffect(() => {
     const fetchData = async () =>
-      await fetch("http://192.168.0.2:1880/voltage_current")
+      await fetch("http://192.168.0.2:1880/inverter/voltage_current_graph")
         .then(async (response) => {
           return await response.json();
         })
@@ -42,18 +42,20 @@ export default function BatteryVoltageCurrentGraph() {
           <CartesianGrid
             strokeDasharray="3 3"
             horizontalCoordinatesGenerator={(props) => [
-              (props.height * 5) / 5 - 55,
-              (props.height * 4) / 5 - 55,
-              (props.height * 3) / 5 - 55,
-              (props.height * 2) / 5 - 55,
-              (props.height * 1) / 5 - 55,
+              (props.height * 6) / 6 - 55,
+              (props.height * 5) / 6 - 55,
+              (props.height * 4) / 6 - 55,
+              (props.height * 3) / 6 - 55,
+              (props.height * 2) / 6 - 55,
+              (props.height * 1) / 6 - 55,
             ]}
             verticalCoordinatesGenerator={(props) => [
-              (props.width * 5) / 5,
-              (props.width * 4) / 5,
-              (props.width * 3) / 5,
-              (props.width * 2) / 5,
-              (props.width * 1) / 5,
+              (props.width * 6) / 6,
+              (props.width * 5) / 6,
+              (props.width * 4) / 6,
+              (props.width * 3) / 6,
+              (props.width * 2) / 6,
+              (props.width * 1) / 6,
             ]}
           />
           <XAxis
@@ -62,12 +64,16 @@ export default function BatteryVoltageCurrentGraph() {
             interval={"equidistantPreserveStart"}
             tickCount={4}
           />
-          <YAxis yAxisId="left" label="V" domain={["auto", "auto"]} />
+          <YAxis
+            yAxisId="left"
+            label="V"
+            domain={["dataMin - (dataMin / 2)", "dataMax + (dataMax * 2)"]}
+          />
           <YAxis
             yAxisId="right"
             orientation="right"
             label="A"
-            domain={["auto", "auto"]}
+            domain={["dataMin - (dataMin / 2)", "dataMax + (dataMax * 2)"]}
           />
           <Tooltip
             labelFormatter={dateFormatter}

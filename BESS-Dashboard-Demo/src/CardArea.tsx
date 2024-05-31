@@ -3,31 +3,21 @@ import Card from "./Card";
 import { useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 
+const fetchData = async (url: string) =>
+  await fetch("http://192.168.0.2:1880" + url).then(async (response) => {
+    return await response.json();
+  });
+
 function CardArea() {
   // Initialize data, empty as it has not attempted to fetch data yet
   const [inverterData, setInverterData] = useState<inverterDataType>({});
   const [batteryData, setBMSData] = useState<bmsDataType>({});
 
   useEffect(() => {
-    const fetchData = async () =>
-      await fetch("http://192.168.0.2:1880/inverterStatus")
-        .then(async (response) => {
-          return await response.json();
-        })
-        .then((result) => setInverterData(result));
+    const getData = async (url: string) =>
+      await fetchData(url).then((result) => setInverterData(result));
 
-    fetchData();
-  }, []);
-
-  useEffect(() => {
-    const fetchData = async () =>
-      await fetch("http://192.168.0.2:1880/bmsStatus")
-        .then(async (response) => {
-          return await response.json();
-        })
-        .then((result) => setBMSData(result));
-
-    fetchData();
+    getData("/inverter");
   }, []);
 
   return (
@@ -38,10 +28,10 @@ function CardArea() {
           <p>{inverterData.chargerStatus}</p>{" "}
         </Card>
         <Card Name="Backup Power" Icon="...">
-          {inverterData.backupPower}
+          {inverterData.ACLoadPower?.toFixed(2)} kW
         </Card>
         <Card Name="Battery Throughput" Icon="...">
-          {inverterData.throughput}{" "}
+          {inverterData.energyLifetime?.toFixed(2)} kWh{" "}
         </Card>
         <Card Name="SOC" Icon="...">
           {batteryData.soc}
@@ -50,7 +40,10 @@ function CardArea() {
           {batteryData.temperature}
         </Card>
         <Card Name="Ambient Temperature" Icon="...">
-          {inverterData.temperature}{" "}
+          {inverterData.temperature?.toFixed(2)} C{" "}
+          <p>
+            {((Number(inverterData.temperature) * 9) / 5 + 32).toFixed(2)} F{" "}
+          </p>
         </Card>
       </div>
     </>
